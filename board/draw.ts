@@ -2,7 +2,6 @@ interface iShape {
     draw(ctx:CanvasRenderingContext2D): void;
     x: number;
     y: number;
-    color: string;
     lineWidth: number;
 }
 
@@ -11,23 +10,23 @@ class cCircle implements iShape {
     public y: number = 0;
     public r: number = 20;
     public lineWidth: number = 1;
-    public color: string = "blue";
+    public fillStyle: CanvasPattern; 
 
-    constructor(x: number, y: number, r: number, color: string = "blue", lineWidth: number = 1)
+    constructor(x: number, y: number, r: number, fillStyle: CanvasPattern, lineWidth: number = 1)
     {
         this.x = x;
         this.y = y;
         this.r = r;
         this.lineWidth = lineWidth;
-        this.color = color;
+        this.fillStyle = fillStyle;
     }
 
     draw(ctx:CanvasRenderingContext2D): void
     {
         ctx.save();
         ctx.beginPath();
-        ctx.strokeStyle = this.color;
-        ctx.fillStyle = this.color;
+        ctx.strokeStyle = this.fillStyle;
+        ctx.fillStyle = this.fillStyle;
         ctx.lineWidth = this.lineWidth;
         ctx.arc(this.x, this.y, this.r, 0, 2*Math.PI);
         ctx.fill();
@@ -107,8 +106,8 @@ class cGrid {
         var yUnit:number = this.w/this.n;
         ctx.save();
         ctx.beginPath();
-        ctx.fillStyle = "firebrick";
-        ctx.strokeStyle = "grey";
+//        ctx.fillStyle = "firebrick";
+        ctx.strokeStyle = "black";
         ctx.lineWidth = 2;
         ctx.fillRect(this.x, this.y, this.w, this.h);
         ctx.lineWidth = 2;
