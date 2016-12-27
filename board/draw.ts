@@ -98,7 +98,7 @@ class cGrid {
         this.y = y;
         this.w = w;
         this.h = h;
-        this.n = n + 2;
+        this.n = n + 1;
     }
     draw(ctx:CanvasRenderingContext2D): void
     {
@@ -111,7 +111,7 @@ class cGrid {
         ctx.lineWidth = 2;
         ctx.fillRect(this.x, this.y, this.w, this.h);
         ctx.lineWidth = 2;
-        for(var i = 1; i < this.n; i++) {
+        for(var i = 1; i < this.n ; i++) {
             ctx.moveTo(this.x + xUnit, this.y + i*yUnit);
             ctx.lineTo(this.x + this.w - xUnit, this.y + i*yUnit);
             ctx.moveTo(this.x + i*xUnit, this.y + yUnit);
