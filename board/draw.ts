@@ -120,12 +120,24 @@ class cGrid {
         ctx.stroke();
         ctx.restore();
     }
+    getStoneCanvasXY(xC:number, yC:number):cPoint
+    {
+        var yUnit:number = this.h/this.n;
+        var xUnit:number = this.w/this.n;
+        var x: number = Math.floor(xC/xUnit);
+        var y: number = Math.floor(yC/yUnit);
+        return new cPoint(x, y);
+    }
     getStone(x:number, y:number):cPoint
     {
         var xUnit:number = this.h/this.n;
         var yUnit:number = this.w/this.n;
-        console.assert(x >= 0 && x < this.n - 1);
-        console.assert(y >= 0 && y < this.n - 1);
+        if(x < 0 || x >= this.n - 1) {
+            return new cPoint(NaN, NaN);
+        }
+        if(y < 0 || y >= this.n - 1) {
+            return new cPoint(NaN, NaN);
+        }
         return new cPoint(this.x + (x + 1)*xUnit, this.y + (y + 1)*yUnit); 
     }
     getStoneRadius():number

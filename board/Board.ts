@@ -28,7 +28,7 @@ class BoardState {
 
     add(xRow: number, xCol: number, objId:number) {
         this._state[xRow*this.numCols + xCol] = objId;
-        console.log("Moved " + objId + "to " + "(" + xRow + "," + xCol + ")")
+        console.log("Moved " + objId + " to " + "(" + xRow + "," + xCol + ")")
     }
     
     del(xRow: number, xCol: number) {
