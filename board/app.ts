@@ -1,5 +1,5 @@
 /// <reference path="draw.ts"/>
-/// <reference path="Board.ts"/>
+/// <reference path="BoardState.ts"/>
 var canvas:HTMLCanvasElement;
 var ctx: CanvasRenderingContext2D;
 var gridSize: number = 19;
