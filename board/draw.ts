@@ -124,8 +124,8 @@ class cGrid {
     {
         var yUnit:number = this.h/this.n;
         var xUnit:number = this.w/this.n;
-        var x: number = Math.floor(xC/xUnit);
-        var y: number = Math.floor(yC/yUnit);
+        var x: number = Math.floor((xC/xUnit) - 0.5);
+        var y: number = Math.floor((yC/yUnit) - 0.5);
         return new cPoint(x, y);
     }
     getStone(x:number, y:number):cPoint
