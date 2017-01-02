@@ -1,5 +1,5 @@
 class BoardState {
-    public _state: Array<number>;
+    private _state: Array<number>;
     public numRows: number;
     public numCols: number;
 
@@ -33,5 +33,12 @@ class BoardState {
     
     del(xRow: number, xCol: number) {
         this._state[xRow*this.numCols + xCol] = 0;
+    }
+    forEach(func: (row:number, col:number, val:number) => void) {
+        for(var xRow =0; xRow < this.numRows; xRow ++) {
+            for(var xCol =0; xCol < this.numCols; xCol ++) {
+                func(xRow, xCol, this._state[xRow*this.numCols + xCol]);
+            }
+        }
     }
 }
