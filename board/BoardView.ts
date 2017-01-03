@@ -31,9 +31,9 @@ class cGrid implements iLayer {
         ctx.save();
         ctx.beginPath();
         ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
         ctx.fillRect(this.x, this.y, this.w, this.h);
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
         for(var i = 1; i < this.n ; i++) {
             ctx.moveTo(this.x + xUnit, this.y + i*yUnit);
             ctx.lineTo(this.x + this.w - xUnit, this.y + i*yUnit);
@@ -60,6 +60,10 @@ class cStarPoints implements iLayer {
         this.w = w;
         this.h = h;
         this.n = n + 1;
+        if (n == 19) {
+            this._starlocX = [3, 3, 3,9, 9, 9, 15, 15, 15];
+            this._starlocY = [3, 9, 15, 3, 9, 15, 3, 9, 15];
+        }
     }
     draw(ctx:CanvasRenderingContext2D): void
     {
@@ -70,7 +74,8 @@ class cStarPoints implements iLayer {
         for(var i = 0; i < this._starlocX.length ; i++) {
             var xRow = this._starlocX[i];
             var xCol = this._starlocY[i];
-            ctx.moveTo(this.x + xRow*xUnit + xUnit, this.y + xCol*yUnit + yUnit);
+            var circle = new cCircle(this.x + xRow*xUnit + xUnit, this.y + xCol*yUnit + yUnit, 2, "black");
+            circle.draw(ctx);
         }
         ctx.stroke();
         ctx.restore();
@@ -102,6 +107,7 @@ class BoardView {
     }
     buildLayers() {
         this._layers.push(new cGrid(this.x, this.y, this.w, this.h, this.n))
+        this._layers.push(new cStarPoints(this.x, this.y, this.w, this.h, this.n))
     }
     draw(ctx:CanvasRenderingContext2D): void {
         var xLayer: number;
