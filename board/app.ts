@@ -1,4 +1,5 @@
-/// <reference path="draw.ts"/>
+/// <reference path="Shape.ts"/>
+/// <reference path="BoardView.ts"/>
 /// <reference path="BoardState.ts"/>
 /// <reference path="GameTree.ts"/>
 var canvas:HTMLCanvasElement;
@@ -11,7 +12,7 @@ var blkstone: CanvasPattern;
 var whtstone: CanvasPattern;
 var board :BoardState;
 var gameTree: GameTree;
-var gameLoopMode = true;
+var gameLoopMode = false;
 
 
 function drawStone(ctx, x, y, isWhite)
