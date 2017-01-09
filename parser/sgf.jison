@@ -5,13 +5,14 @@
 %lex
 %%
 
-\s+                   /* skip whitespace */
-[A-Z]+  { return UCIDENT; }
-[0-9]+  { return NUMBER; }
-[0-9]+\.[0-9]+  { return REAL; }
-[1|2]   { return DOUBLE;}
-[B|W]   { return COLOR;}
-
+\s+                     /* skip whitespace */
+[0-9]+"."[0-9]+         return REAL
+[0-9]+                  return NUMBER
+[1|2]                   return DOUBLE
+[B|W]                   return COLOR
+[A-Z]+                  return UCIDENT
+(\\.|[^"])+             return STRING
+<<EOF>>                 return 'EOF'
 
 /lex
 
@@ -45,7 +46,6 @@ Properties: Property
 | Properties Property
 
 Property: PropIdent PropValues
-
 
 PropValues: PropValue
 | PropValues PropValue
