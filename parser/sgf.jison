@@ -7,13 +7,12 @@
 
 \s+                     /* skip whitespace */
 [0-9]+"."[0-9]+         return 'REAL'
-[0-9]+                  return 'NUMBER'
-[1|2]                   return 'DOUBLE'
-[B|W]                   return 'COLOR'
-[A-Z]+                  return 'UCIDENT'
-(\\.|[^"])+             return 'STRING'
-<<EOF>>                 return 'EOF'
-
+(\\.|[^"\[\]:\(\)])+        return 'STRING'
+"["                     return '['
+"]"                     return ']'
+"("                     return '('
+")"                     return ')'
+":"                     return ':'
 /lex
 
 /* operator associations and precedence */
@@ -22,41 +21,99 @@
 
 %% /* language grammar */
 
+Collection
+    : GameTree
+        { $$ = { "gametrees": [ $1 ] }; }
+    | Collection GameTree
+        {
+            $$=$1;
+            $1["gametrees"].push($2);
+        }
+    ;
 
-Collection: GameTree
-| Collection GameTree
+GameTree
+    : "(" Sequence ")"
+        { $$ = $1; }
+    | "(" Sequence Collection ")"
+        {
+            Object.assign($1, $2);
+            $$ = $1;
+        }
+    ;
 
-GameTree: "(" Sequence ")"
-| "(" Sequence Collection ")"
+Sequence
+    : Node
+        { $$ = { "sequence": [ $1 ] }; }
+    | Sequence Node
+        {
+            $$=$1;
+            $1["sequence"].push($2);
+        }
+    ;
 
-Sequence: Node
-| Sequence Node
+Node
+    : ";"
+        { $$ = { "node" : "null"}; }
+    | ";" Properties
+        { $$ = { "node" : $2 }; }
+    ;
 
-Node: ";"
-| ";" Properties
+Properties
+    : Property
+        { $$ = { "property": [ $1 ] }; }
+    | Properties Property
+        {
+            $$=$1;
+            $1["property"].push($2);
+        }
+    ;
 
-Properties: Property
-| Properties Property
+Property
+    : PropIdent PropValues
+        {
+            Object.assign($1, $2);
+            $$ = $1;
+        }
+    ;
 
-Property: PropIdent PropValues
 
-PropValues: PropValue
-| PropValues PropValue
+PropValues
+    : PropValue
+        { $$ = { "propvalues": [ $1 ] }; }
+    | PropValues PropValue
+        {
+            $$=$1;
+            $1["propvalues"].push($2);
+        }
+    ;
 
-PropValue: "[" CValueType "]"
+PropValue
+    : "[" CValueType "]"
+        { $$ = $1; }
+    ;
 
-CValueType: ValueType
-| ValueType ":" ValueType
+CValueType
+    : ValueType
+        { $$ =  $1 ; }
+    | ValueType ":" ValueType
+        { $$ = { 
+                 "compose1" : $1,
+                 "compose2": $3
+                };
+        }
+    ;
 
-PropIdent: UCIDENT
+PropIdent
+    : TEXT 
+        { $$ = { "ucident": yytext}; }
+    ;
 
-ValueType: NONE
-| NUMBER
-| REAL
-| DOUBLE
-| COLOR
-| TEXT
-| SIMPLETEXT
-| POINT
-| MOVE
-| STONE
+ValueType
+    | REAL
+        { $$ = { "number": Number(yytext)}; }
+    | TEXT
+        { $$ = { "data": yytext}; }
+    ;
+
+/* UCIDENT TEXT SIMPLETEXT COLOR DOUBLE  POINT MOVE STONE are all TEXTs */
+/* NUMBER and REAL are both numbers*/
