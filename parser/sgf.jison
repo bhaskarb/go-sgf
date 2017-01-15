@@ -7,19 +7,27 @@
 
 \s+                     /* skip whitespace */
 [0-9]+"."[0-9]+         return 'REAL'
-(\\.|[^"\[\]:\(\)])+        return 'STRING'
 "["                     return '['
 "]"                     return ']'
 "("                     return '('
 ")"                     return ')'
 ":"                     return ':'
+";"                     return ';'
+(\\.|[^"\[\]:\(\)])+        return 'STRING'
 /lex
 
 /* operator associations and precedence */
 
-%start Collection 
+%start SGF 
 
 %% /* language grammar */
+
+SGF
+    : Collection
+    {
+        return $1;
+    }
+    ;
 
 Collection
     : GameTree
@@ -33,11 +41,11 @@ Collection
 
 GameTree
     : "(" Sequence ")"
-        { $$ = $1; }
+        { $$ = $2; }
     | "(" Sequence Collection ")"
         {
-            Object.assign($1, $2);
-            $$ = $1;
+            $$ = $2;
+            $2["gametree"] = $3;
         }
     ;
 
@@ -55,16 +63,18 @@ Node
     : ";"
         { $$ = { "node" : "null"}; }
     | ";" Properties
-        { $$ = { "node" : $2 }; }
+        { 
+            $$ = { "node" : $2 }; 
+        }
     ;
 
 Properties
     : Property
-        { $$ = { "property": [ $1 ] }; }
+        { $$ = [ $1 ]; }
     | Properties Property
         {
             $$=$1;
-            $1["property"].push($2);
+            $1.push($2);
         }
     ;
 
@@ -74,6 +84,11 @@ Property
             Object.assign($1, $2);
             $$ = $1;
         }
+    ;
+
+PropIdent
+    : STRING 
+        { $$ = { "ucident": yytext}; }
     ;
 
 
@@ -89,31 +104,35 @@ PropValues
 
 PropValue
     : "[" CValueType "]"
-        { $$ = $1; }
+        { 
+            $$ = $2; 
+        }
     ;
 
 CValueType
     : ValueType
-        { $$ =  $1 ; }
+        { 
+            $$ =  $1 ; 
+        }
     | ValueType ":" ValueType
-        { $$ = { 
+        { 
+            $$ = { 
                  "compose1" : $1,
                  "compose2": $3
                 };
         }
     ;
 
-PropIdent
-    : TEXT 
-        { $$ = { "ucident": yytext}; }
-    ;
-
 ValueType
-    | REAL
-        { $$ = { "number": Number(yytext)}; }
-    | TEXT
-        { $$ = { "data": yytext}; }
+    : REAL
+        { 
+            $$ = { "number": Number(yytext)}; 
+        }
+    | STRING 
+        {
+            $$ = { "data": yytext}; 
+        }
     ;
 
-/* UCIDENT TEXT SIMPLETEXT COLOR DOUBLE  POINT MOVE STONE are all TEXTs */
-/* NUMBER and REAL are both numbers*/
+/* UCIDENT TEXT SIMPLETEXT COLOR DOUBLE  POINT MOVE STONE are all STRING */
+/* NUMBER and REAL are both REAL */
