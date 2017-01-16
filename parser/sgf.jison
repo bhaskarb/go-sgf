@@ -6,14 +6,14 @@
 %%
 
 \s+                     /* skip whitespace */
-[0-9]+"."[0-9]+         return 'REAL'
-"["                     return '['
-"]"                     return ']'
-"("                     return '('
-")"                     return ')'
-":"                     return ':'
-";"                     return ';'
-(\\.|[^"\[\]:\(\)])+        return 'STRING'
+[A-Z]+                          return 'UCIDENT'
+\[\]                            return 'NONE'
+\[[+-]*[0-9]+\]                 return 'NUMBER'
+\[[+-]*[0-9]+"."[0-9]+\]        return 'REAL'
+\[(\\.|[^\]\\])*\]              return 'STRING'
+"("                             return '('
+")"                             return ')'
+";"                             return ';'
 /lex
 
 /* operator associations and precedence */
@@ -23,16 +23,16 @@
 %% /* language grammar */
 
 SGF
-    : Collection
+    : GameTrees 
     {
         return $1;
     }
     ;
 
-Collection
+GameTrees
     : GameTree
         { $$ = { "gametrees": [ $1 ] }; }
-    | Collection GameTree
+    | GameTrees GameTree
         {
             $$=$1;
             $1["gametrees"].push($2);
@@ -42,7 +42,7 @@ Collection
 GameTree
     : "(" Sequence ")"
         { $$ = $2; }
-    | "(" Sequence Collection ")"
+    | "(" Sequence GameTrees ")"
         {
             $$ = $2;
             $2["gametree"] = $3;
@@ -61,10 +61,10 @@ Sequence
 
 Node
     : ";"
-        { $$ = { "node" : "null"}; }
+        { $$ = { }; }
     | ";" Properties
         { 
-            $$ = { "node" : $2 }; 
+            $$ = $2; 
         }
     ;
 
@@ -87,7 +87,7 @@ Property
     ;
 
 PropIdent
-    : STRING 
+    : UCIDENT 
         { $$ = { "ucident": yytext}; }
     ;
 
@@ -103,34 +103,21 @@ PropValues
     ;
 
 PropValue
-    : "[" CValueType "]"
-        { 
-            $$ = $2; 
-        }
-    ;
-
-CValueType
-    : ValueType
-        { 
-            $$ =  $1 ; 
-        }
-    | ValueType ":" ValueType
-        { 
-            $$ = { 
-                 "compose1" : $1,
-                 "compose2": $3
-                };
-        }
-    ;
-
-ValueType
     : REAL
         { 
-            $$ = { "number": Number(yytext)}; 
+            $$ = { "number": Number(yytext.slice(1,-1))}; 
         }
     | STRING 
         {
-            $$ = { "data": yytext}; 
+            $$ = { "string": yytext.slice(1, -1)}; 
+        }
+    | NUMBER 
+        { 
+            $$ = { "number": Number(yytext.slice(1,-1))}; 
+        }
+    | NONE
+        {
+            $$ = { }; 
         }
     ;
 

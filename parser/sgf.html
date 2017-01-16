@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!-- saved from url=(0031)http://zaa.ch/jison/demos/calc/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+  	<title>SGF</title>
+  </head>
+  <body style="zoom: 1;">
+    </ul>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="sgf.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("button").click(function () {
+          try {
+            var result = sgf.parse($("textarea").val())
+            console.log(result);
+            $("pre").text(JSON.stringify(result, null, '\t'));
+          } catch (e) {
+            $("pre").text(e);
+          }
+        });
+      });
+    </script>
+    <h1>Calculator demo</h1>
+    <p>Enter an expression to evaluate, such as PI*4^2 + 5:</p>
+    <p>
+    <textarea rows="20" cols="80">(;FF[4]C[root](;C[a];C[b](;C[c]) (;C[d];C[e])) (;C[f](;C[g];C[h];C[i]) (;C[j]))) </textarea>
+    <button>equals</button> <pre></pres>
+    </p>
+
+</body></html>
