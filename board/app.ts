@@ -71,7 +71,8 @@ function gameLoop() {
         //    ctx.fillStyle = "black";
             ctx.fillRect(0, 0, 720, 720);
 
-            var data:string = gameTree.getData();
+            var dict:IDict = gameTree.getData();
+            var data:string = dict["data"];
             var isWhite: boolean = data[0] == "W";
             var xRow: number = data.charCodeAt(2) - 'a'.charCodeAt(0);
             var xCol: number = data.charCodeAt(3) - 'a'.charCodeAt(0);

@@ -16,7 +16,7 @@
             console.log(result);
             $("pre").text(JSON.stringify(result, null, '\t'));
           } catch (e) {
-            $("pre").text(e);
+            $("pre").text(e.message);
           }
         });
       });

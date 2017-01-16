@@ -1,10 +1,14 @@
+interface IDict {
+    [key:string] : string;
+}
+
 class GameTree {
     private _parent: GameTree;
     private _children: Array<GameTree>;
-    private _data: string;
+    private _dict: IDict; 
 
     constructor (data:string, parent=null) {
-        this._data = data;
+        this._dict["data"] = data;
         this._parent = parent;
         this._children = [];
         if(this._parent != null) {
@@ -12,19 +16,24 @@ class GameTree {
         }
     }
 
-    getData(): string {
-        return this._data;
+    addItem(key:string, value:string) {
+        console.assert(!(key in this._dict));
+        this._dict[key] = value;
+    }
+
+    getData(): IDict {
+        return this._dict;
     }
 
     addChild(child:GameTree):void {
         this._children.push(child);
     }
-    doDFS(func:(value:string) => void):void {
+    doDFS(func:(value:IDict) => void):void {
         var child: GameTree;
         var xChild : number = 0;
         var numChild :number = this._children.length;
 
-        func(this._data);
+        func(this._dict);
         for(; xChild < numChild; xChild ++) {
             child = this._children[xChild];
             child.doDFS(func);

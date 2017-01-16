@@ -7,10 +7,9 @@
 
 \s+                     /* skip whitespace */
 [A-Z]+                          return 'UCIDENT'
-\[\]                            return 'NONE'
 \[[+-]*[0-9]+\]                 return 'NUMBER'
 \[[+-]*[0-9]+"."[0-9]+\]        return 'REAL'
-\[(\\.|[^\]\\])*\]              return 'STRING'
+\[(\\.|[^\]])*\]              return 'STRING'
 "("                             return '('
 ")"                             return ')'
 ";"                             return ';'
@@ -114,10 +113,6 @@ PropValue
     | NUMBER 
         { 
             $$ = { "number": Number(yytext.slice(1,-1))}; 
-        }
-    | NONE
-        {
-            $$ = { }; 
         }
     ;
 
