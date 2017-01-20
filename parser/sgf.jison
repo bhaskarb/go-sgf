@@ -7,9 +7,7 @@
 
 \s+                     /* skip whitespace */
 [A-Z]+                          return 'UCIDENT'
-\[[+-]*[0-9]+\]                 return 'NUMBER'
-\[[+-]*[0-9]+"."[0-9]+\]        return 'REAL'
-\[(\\.|[^\]])*\]              return 'STRING'
+\[(\\.|[^\]])*\]              return 'PROP'
 "("                             return '('
 ")"                             return ')'
 ";"                             return ';'
@@ -30,40 +28,49 @@ SGF
 
 GameTrees
     : GameTree
-        { $$ = { "gametrees": [ $1 ] }; }
+        { $$ = [ $1 ]; }
     | GameTrees GameTree
         {
             $$=$1;
-            $1["gametrees"].push($2);
+            $1.push($2);
         }
     ;
 
 GameTree
     : "(" Sequence ")"
         { $$ = $2; }
-    | "(" Sequence GameTrees ")"
-        {
-            $$ = $2;
-            $2["gametree"] = $3;
-        }
     ;
 
 Sequence
     : Node
-        { $$ = { "sequence": [ $1 ] }; }
+        { $$ = $1;
+        }
+    | Node GameTrees
+    {
+        $1["children"] = $2;
+        $$ = $1
+    }
     | Sequence Node
         {
+            $1["children"].push($2);
             $$=$1;
-            $1["sequence"].push($2);
+        }
+    | Sequence Node GameTrees
+        {
+            $1["children"].push($2);
+            $$=$1;
+            $2["children"] = $3;
         }
     ;
 
 Node
     : ";"
-        { $$ = { }; }
+        { 
+            $$ = { "props": [], "children": [] }; 
+        }
     | ";" Properties
         { 
-            $$ = $2; 
+            $$ = { "props": $2, "children": [] }; 
         }
     ;
 
@@ -93,26 +100,18 @@ PropIdent
 
 PropValues
     : PropValue
-        { $$ = { "propvalues": [ $1 ] }; }
+        { $$ = { "props": [ $1 ] }; }
     | PropValues PropValue
         {
             $$=$1;
-            $1["propvalues"].push($2);
+            $1["props"].push($2);
         }
     ;
 
 PropValue
-    : REAL
-        { 
-            $$ = { "number": Number(yytext.slice(1,-1))}; 
-        }
-    | STRING 
+    : PROP 
         {
-            $$ = { "string": yytext.slice(1, -1)}; 
-        }
-    | NUMBER 
-        { 
-            $$ = { "number": Number(yytext.slice(1,-1))}; 
+            $$ = yytext.slice(1, -1); 
         }
     ;
 
