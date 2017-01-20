@@ -1,5 +1,15 @@
 /// <reference path="GameTree.ts"/>
 
+interface SGFPropValue {
+    ucident: string;
+    props: Array<string>
+}
+
+interface SGFNode {
+    props: Array<SGFPropValue>;
+    children: Array<SGFNode>;
+}
+
 interface SGFProp {
     value: string;
     type: string;
