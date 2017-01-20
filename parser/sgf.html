@@ -14,7 +14,7 @@
           try {
             var result = sgf.parse($("textarea").val())
             console.log(result);
-            $("pre").text(JSON.stringify(result, null, '\t'));
+            $("pre").text(JSON.stringify(result, null, ' '));
           } catch (e) {
             $("pre").text(e.message);
           }
