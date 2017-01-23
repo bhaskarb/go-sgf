@@ -1,5 +1,16 @@
 
 /* description: Parses and executes SGF(smart game format: http://www.red-bean.com/sgf/). */
+%{
+    function findLastNodeInSequence(node)
+    {
+        if(node.children.length == 0) {
+            return node;
+        }
+        console.assert(node.children.length = 1);
+        return findLastNodeInSequence(node.children[0]);
+    };
+%}
+
 /* lexical grammar */
 %lex
 %%
@@ -14,6 +25,7 @@
 
 /* operator associations and precedence */
 
+
 %start SGF 
 
 %% /* language grammar */
@@ -27,38 +39,48 @@ SGF
 
 GameTrees
     : GameTree
-        { $$ = [ $1 ]; }
+        { $$ = [ $1 ]; 
+            console.log("GAMETREE");
+        }
     | GameTrees GameTree
         {
             $$=$1;
+            console.log("GAMETREES GAMETREE");
             $1.push($2);
         }
     ;
 
 GameTree
     : "(" Sequence ")"
-        { $$ = $2; }
+        { $$ = $2; 
+            console.log("SEQUENCE:")
+            console.log(JSON.stringify($2))
+            
+        }
+    | "(" Sequence GameTrees")"
+        {
+            lastNode = findLastNodeInSequence($2);
+            lastNode["children"] = $3;
+            console.log("SEQUENCE GAMETREE")
+            $$ = $2;
+            console.log(JSON.stringify($2))
+        }
     ;
 
 Sequence
     : Node
         { $$ = $1;
+            console.log("NODE")
+            console.log(JSON.stringify($1)); 
+            $$ = $1;
         }
-    | Node GameTrees
-    {
-        $1["children"] = $2;
-        $$ = $1
-    }
     | Sequence Node
         {
+            console.log("SEQUENCE NODE")
+            console.log(JSON.stringify($1)); 
+            console.log(JSON.stringify($2)); 
             $1["children"].push($2);
             $$=$1;
-        }
-    | Sequence Node GameTrees
-        {
-            $1["children"].push($2);
-            $$=$1;
-            $2["children"] = $3;
         }
     ;
 
@@ -69,7 +91,7 @@ Node
         }
     | ";" Properties
         { 
-            $$ = { "props": $2, "children": [] }; 
+            $$ = { "props": $2, "children": [] };
         }
     ;
 
