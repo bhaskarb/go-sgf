@@ -119,6 +119,7 @@ class SGFProps {
 
     }
     GetProp(name:string):SGFProp {
+        console.assert(name in this._dict);
         return this._dict[name];
     }
 }
@@ -145,9 +146,13 @@ function evaluateNodeProp(prop:SGFPropValue, gtree:GameTree, sgfprop:SGFProps)
     var props: Array<string> = prop.props;
 
     if (!sgfprop.contains(ucident)) {
-        console.error("Invalid SGF prop " + ucident);
+        console.warn("Invalid SGF prop " + ucident);
+        return;
     }
     var sgfp:SGFProp =  sgfprop.GetProp(ucident);
+    if(sgfp == null) {
+        return;
+    }
     if(sgfp.type == "move") {
         gtree.addItem("data", props[0])
     } else if(sgfp.type == "game-info") {
