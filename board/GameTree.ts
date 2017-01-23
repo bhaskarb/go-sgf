@@ -8,7 +8,10 @@ class GameTree {
     private _dict: IDict; 
 
     constructor (data:string, parent=null) {
-        this._dict = { "data": data };
+        this._dict = { };
+        if(data != null) {
+            this._dict["data"] = data;
+        }
         this._parent = parent;
         this._children = [];
         if(this._parent != null) {

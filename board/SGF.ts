@@ -27,10 +27,11 @@ class SGFProps {
         this._dict[name] = this.createProp(value, type, func); 
     }
     createProp(value:string, type:string, func:string):SGFProp {
-        var prop:SGFProp;
-        prop.value = value;
-        prop.type = type;
-        prop.func = func;
+        var prop:SGFProp = {
+            "value": value,
+            "type":type,
+            "func":func
+        };
         return prop;
     }
     contains(name:string) {
@@ -138,32 +139,37 @@ function getFirstProp(node:any):string
     return String(firstProp["number"]);
 }
 
-function evaluateNode(node:any, gtree:GameTree, sgfprop:SGFProps): GameTree
+function evaluateNodeProp(prop:SGFPropValue, gtree:GameTree, sgfprop:SGFProps)
 {
-    var ucident = node["ucident"];
-    var firstProp = getFirstProp(node);
+    var ucident:string = prop.ucident;
+    var props: Array<string> = prop.props;
 
     if (!sgfprop.contains(ucident)) {
         console.error("Invalid SGF prop " + ucident);
     }
     var sgfp:SGFProp =  sgfprop.GetProp(ucident);
     if(sgfp.type == "move") {
-        var child:GameTree = new GameTree(firstProp, gtree);
-        return child;
+        gtree.addItem("data", props[0])
+    } else if(sgfp.type == "game-info") {
+        gtree.addItem(ucident, props[0])
+    } else if(sgfp.type == "") {
+        gtree.addItem(ucident, props[0])
     }
-    return gtree;
 }
 
-function convertSGFToGameTree(sgfjson:any, parent:GameTree, sgfprop:SGFProps) {
-    var gametrees = sgfjson["gametrees"];
-    var currTree = parent;
-    for(var i = 0; i < gametrees.length; i ++) {
-        var gametree = gametrees[i];
-        var sequence = gametree["sequence"];
-        for(var i = 0; i < sequence.length; i ++) {
-            var node = sequence[i];
-            currTree = evaluateNode(node, currTree, sgfprop);
-        }
-        convertSGFToGameTree(gametree["gametree"], currTree, sgfprop);
+function convertSGFToGameTree(sgfnode:SGFNode, sgfprop:SGFProps):GameTree {
+    var tree:GameTree= new GameTree(null);
+    var props:Array<SGFPropValue> = sgfnode.props;
+    var children: Array<SGFNode> = sgfnode.children;
+
+    for(var i = 0; i < props.length; i ++) {
+        var prop:SGFPropValue = props[i];
+        evaluateNodeProp(prop, tree, sgfprop);
     }
+    for (var i=0; i < children.length; i++) {
+        var child = children[i];
+        var ctree:GameTree = convertSGFToGameTree(child, sgfprop);
+        tree.addChild(ctree);
+    }
+    return tree;
 }

@@ -7,12 +7,17 @@
   <body style="zoom: 1;">
     </ul>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="../board/GameTree.js"></script>
+    <script src="../board/SGF.js"></script>
     <script src="sgf.js"></script>
     <script>
       $(document).ready(function () {
         $("button").click(function () {
           try {
             var result = sgf.parse($("textarea").val())
+            var sgfprop = new SGFProps();
+            sgfprop.getDefault();
+            var gtree = convertSGFToGameTree(result[0], sgfprop);
             console.log(result);
             $("pre").text(JSON.stringify(result, null, ' '));
           } catch (e) {

@@ -1,6 +1,5 @@
 
 /* description: Parses and executes SGF(smart game format: http://www.red-bean.com/sgf/). */
-
 /* lexical grammar */
 %lex
 %%
